@@ -2,12 +2,17 @@
 var allQuests = [];
 var heroesById = {};
 var currentHeroId = questCommon.getCurrentHeroId();
+var randomQuestId = null;
 
 // Build a quest card from database data using text-only DOM elements.
 function makeQuestCard(quest) {
   var owner = heroesById[quest.postedBy] || { name: "Campus Hero", avatar: "🧙" };
   var card = document.createElement("article");
   card.className = "panel quest-card";
+  card.dataset.questId = quest._id;
+  if (quest._id === randomQuestId) {
+    card.classList.add("random-quest-highlight");
+  }
   var top = document.createElement("div");
   var difficulty = document.createElement("span");
   difficulty.className = "difficulty difficulty-" + quest.difficulty.toLowerCase();
@@ -85,7 +90,12 @@ function renderQuests() {
   if (visibleQuests.length === 0) {
     var empty = document.createElement("div");
     empty.className = "col-12";
-    empty.innerHTML = '<div class="panel empty-state">No quests match that search. Try another filter.</div>';
+    var emptyPanel = document.createElement("div");
+    emptyPanel.className = "panel empty-state";
+    emptyPanel.textContent = allQuests.length === 0
+      ? "No quests yet — be the first hero!"
+      : "No quests match that search. Try another filter.";
+    empty.appendChild(emptyPanel);
     list.appendChild(empty);
   }
 }
@@ -112,6 +122,7 @@ function chooseRandomQuest() {
     return;
   }
   var chosenQuest = openQuests[Math.floor(Math.random() * openQuests.length)];
+  randomQuestId = chosenQuest._id;
   document.getElementById("search-input").value = chosenQuest.title;
   document.getElementById("difficulty-filter").value = "All";
   document.getElementById("status-filter").value = "All";

@@ -25,7 +25,8 @@
 .feed-heading { margin: 35px 0 18px; }
 .feed-heading h2 { display: flex; align-items: center; gap: 10px; font-size: 18px; }
 .quest-card { height: 100%; padding: 21px; transition: .2s ease; }
-.quest-card:hover { border-color: #6cf6e566; transform: translateY(-3px); }
+.quest-card:hover { border-color: #6cf6e5aa; box-shadow: 0 0 24px #6cf6e51c, 0 18px 42px #0005; transform: translateY(-3px); }
+.random-quest-highlight { animation: random-quest-pulse 1.5s ease-in-out 2; }
 .quest-card h3 { margin: 18px 0 8px; font-size: 17px; font-weight: 600; }
 .quest-card p { min-height: 44px; color: var(--muted); font-size: 12px; line-height: 1.65; }
 .quest-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--line); }
@@ -98,6 +99,7 @@
 .level-up-level { margin: 14px 0 4px; color: var(--cyan); font: 14px var(--font-mono); letter-spacing: .14em; }
 @keyframes level-up-shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
 @keyframes level-up-glow { to { box-shadow: 0 0 34px #6cf6e566, 0 0 68px #a68bff33; } }
+@keyframes random-quest-pulse { 50% { border-color: var(--cyan); box-shadow: 0 0 30px #6cf6e566; transform: translateY(-3px); } }
 
 /* Add gentle animation without making the page hard to read. */
 @keyframes portal-pulse { 50% { box-shadow: 0 0 46px #6cf6e577, inset 0 0 34px #a68bff66; } }
@@ -125,4 +127,15 @@
   .profile-identity h1 { font-size: 25px; }
   .profile-banner > .btn { width: 100%; }
   .site-footer { flex-direction: column; }
+}
+
+/* Give narrow phones a little more room for quest details and controls. */
+@media (max-width: 575px) {
+  .mini-stats { justify-content: space-between; gap: 12px; }
+  .mini-stats strong { font-size: 16px; }
+  .quest-card { padding: 17px; }
+  .quest-meta { align-items: start; gap: 8px; }
+  .quest-author { max-width: 65%; }
+  .xp-reward { white-space: nowrap; }
+  .hero-actions .btn { width: 100%; }
 }
