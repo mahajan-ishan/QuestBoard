@@ -52,6 +52,12 @@ function makeQuestCard(quest) {
     acceptButton.textContent = "Accept quest →";
     acceptButton.addEventListener("click", function () { acceptQuest(quest._id); });
     card.appendChild(acceptButton);
+  } else if (quest.status === "Active" && quest.acceptedBy === currentHeroId) {
+    var completeButton = document.createElement("button");
+    completeButton.className = "btn btn-neon btn-sm mt-3";
+    completeButton.textContent = "Complete quest +" + quest.xpReward + " XP";
+    completeButton.addEventListener("click", function () { completeQuest(quest._id, quest.xpReward); });
+    card.appendChild(completeButton);
   }
   return card;
 }

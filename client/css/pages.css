@@ -91,6 +91,14 @@
 .history-card h3 { margin: 0 0 7px; font-size: 14px; }
 .history-card p { margin: 0; color: var(--muted); font-size: 11px; }
 
+/* Make the level-up popup glow and shake when a hero gains a level. */
+.level-up-content { overflow: hidden; border: 1px solid #6cf6e588; border-radius: 18px; color: var(--text); background: radial-gradient(circle at 50% 0, #302c5b, #111521 70%); animation: level-up-shake .55s ease, level-up-glow 1.6s ease-in-out infinite alternate; }
+.level-up-icon { margin: 7px 0; color: #ffe58a; font-size: 47px; text-shadow: 0 0 20px #ffe58a; }
+.level-up-title { color: var(--text); font-size: 35px; }
+.level-up-level { margin: 14px 0 4px; color: var(--cyan); font: 14px var(--font-mono); letter-spacing: .14em; }
+@keyframes level-up-shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+@keyframes level-up-glow { to { box-shadow: 0 0 34px #6cf6e566, 0 0 68px #a68bff33; } }
+
 /* Add gentle animation without making the page hard to read. */
 @keyframes portal-pulse { 50% { box-shadow: 0 0 46px #6cf6e577, inset 0 0 34px #a68bff66; } }
 @keyframes float { 50% { transform: translateY(-8px); } }

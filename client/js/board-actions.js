@@ -55,6 +55,30 @@ async function acceptQuest(questId) {
   }
 }
 
+// Complete a quest, award its XP, and compare the hero's level before and after.
+async function completeQuest(questId, xpReward) {
+  try {
+    var heroBefore = await questApi.getHero(currentHeroId);
+    await questApi.updateQuest(questId, { action: "complete", heroId: currentHeroId });
+    var xpResult = await questApi.addHeroXp(currentHeroId, xpReward);
+    await loadBoard();
+    if (xpResult.hero.level > heroBefore.level) {
+      showLevelUpPopup(xpResult.hero);
+    } else {
+      questCommon.showPageMessage("board-message", "Quest complete! You earned " + xpReward + " XP.", false);
+    }
+  } catch (error) {
+    questCommon.showPageMessage("board-message", error.message, true);
+  }
+}
+
+// Show the glowing popup when the hero reaches a higher level.
+function showLevelUpPopup(hero) {
+  document.getElementById("level-up-number").textContent = hero.level;
+  document.getElementById("level-up-rank").textContent = questCommon.getRankTitle(hero.level);
+  bootstrap.Modal.getOrCreateInstance(document.getElementById("levelUpModal")).show();
+}
+
 // Ask before removing an owned quest, then refresh the board.
 async function deleteQuest(questId) {
   if (!window.confirm("Delete this quest?")) {
