@@ -1,0 +1,70 @@
+@import url("pages.css");
+/* Global colors and spacing for the neon game interface. */
+:root {
+  --bg: #090b14;
+  --panel: #111521;
+  --panel-soft: #151a29;
+  --line: #252d40;
+  --cyan: #6cf6e5;
+  --purple: #a68bff;
+  --pink: #ff72c6;
+  --text: #f3f5ff;
+  --muted: #9299ad;
+  --font-body: 'Space Grotesk', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+/* Set the shared page background, type, and link behavior. */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { min-height: 100vh; color: var(--text); background: radial-gradient(ellipse at 55% -20%, #1b2140 0, var(--bg) 48%); font-family: var(--font-body); }
+a { color: inherit; text-decoration: none; }
+.text-cyan { color: var(--cyan); }
+.text-gradient { color: var(--cyan); background: linear-gradient(100deg, var(--cyan), var(--purple) 65%, var(--pink)); background-clip: text; -webkit-text-fill-color: transparent; }
+.muted { color: var(--muted); }
+
+/* Keep the main navigation compact and consistent on every page. */
+.site-nav { min-height: 76px; border-bottom: 1px solid rgba(119, 135, 177, .12); background: rgba(9, 11, 20, .78); backdrop-filter: blur(16px); }
+.brand { display: flex; align-items: center; gap: 9px; color: var(--text); font: 700 14px var(--font-mono); letter-spacing: .08em; }
+.brand span:last-child { color: var(--cyan); }
+.brand-mark { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid var(--cyan); border-radius: 9px 3px 9px 3px; color: var(--cyan); box-shadow: 0 0 15px #6cf6e533; font-size: 17px; }
+.site-nav .nav-link { margin-left: 22px; color: var(--muted); font-size: 13px; }
+.site-nav .nav-link:hover, .site-nav .nav-link.active { color: var(--cyan); }
+.navbar-toggler { border-color: var(--line); }
+.navbar-toggler-icon { filter: invert(1); }
+
+/* Use the same small mono label to identify game sections. */
+.eyebrow { margin: 0 0 15px; color: var(--cyan); font: 500 10px var(--font-mono); letter-spacing: .16em; }
+.eyebrow-code { margin-left: 12px; color: #616b82; }
+.live-dot { display: inline-block; width: 7px; height: 7px; margin: 0 7px 1px 0; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+.hero-intro { padding-top: 74px; padding-bottom: 73px; }
+h1 { margin: 0; font-size: clamp(48px, 7vw, 78px); font-weight: 700; letter-spacing: -.065em; line-height: .99; }
+h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.04em; }
+.hero-copy { max-width: 480px; margin: 22px 0 0; color: var(--muted); font-size: 16px; line-height: 1.7; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; margin-top: 28px; }
+.btn-neon, .btn-outline-neon, .btn-quiet { padding: 12px 17px; border-radius: 8px; font-size: 13px; font-weight: 600; transition: .2s ease; }
+.btn-neon { border: 1px solid var(--cyan); color: #081211; background: var(--cyan); box-shadow: 0 0 22px #6cf6e52b; }
+.btn-neon:hover { border-color: #9ffff1; color: #06110f; background: #9ffff1; box-shadow: 0 0 28px #6cf6e566; transform: translateY(-2px); }
+.btn-outline-neon { border: 1px solid #6cf6e577; color: var(--cyan); background: #6cf6e508; }
+.btn-outline-neon:hover { border-color: var(--cyan); color: var(--cyan); background: #6cf6e51a; }
+.btn-quiet { border: 1px solid var(--line); color: var(--muted); background: transparent; }
+.subtle-link { color: #bdc3d5; font-size: 13px; }
+.subtle-link span { color: var(--cyan); }
+.mini-stats { display: flex; gap: 42px; margin-top: 54px; }
+.mini-stats div { display: grid; gap: 4px; }
+.mini-stats strong { font: 500 19px var(--font-mono); }
+.mini-stats span, .sort-label, .step-pill { color: var(--muted); font: 10px var(--font-mono); letter-spacing: .08em; }
+
+/* Draw a lightweight portal with CSS shapes instead of an image. */
+.hero-art { position: relative; display: grid; min-height: 320px; place-items: center; overflow: hidden; border: 1px solid #303854; border-radius: 22px; background: radial-gradient(circle, #252748 0, #151829 38%, #0c101b 72%); }
+.hero-art::before, .hero-art::after { position: absolute; width: 230px; height: 230px; border: 1px solid #a68bff33; border-radius: 50%; content: ''; }
+.hero-art::after { width: 290px; height: 290px; border-color: #6cf6e51a; }
+.orbit { position: absolute; width: 320px; height: 110px; border: 1px solid #a68bff44; border-radius: 50%; transform: rotate(-33deg); }
+.orbit-two { width: 320px; border-color: #6cf6e533; transform: rotate(40deg); }
+.portal { z-index: 1; display: grid; width: 110px; height: 150px; place-items: center; border: 2px solid var(--cyan); border-radius: 55% 55% 12px 12px; background: linear-gradient(180deg, #6cf6e52e, #a68bff1c); box-shadow: 0 0 34px #6cf6e544, inset 0 0 26px #a68bff44; animation: portal-pulse 3s ease-in-out infinite; }
+.portal span { color: #fff; font-size: 28px; text-shadow: 0 0 20px var(--cyan); }
+.floating-tag { position: absolute; z-index: 2; padding: 8px 10px; border: 1px solid #6cf6e544; border-radius: 6px; color: var(--cyan); background: #0b1019dd; font: 10px var(--font-mono); letter-spacing: .08em; }
+.tag-one { top: 24%; right: 12%; animation: float 4s ease-in-out infinite; }
+.tag-two { bottom: 24%; left: 12%; color: var(--pink); border-color: #ff72c644; animation: float 4s ease-in-out -2s infinite; }
+.art-caption { position: absolute; right: 20px; bottom: 16px; left: 20px; display: flex; justify-content: space-between; color: #6e7690; font: 9px var(--font-mono); letter-spacing: .1em; }
+

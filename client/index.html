@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuestBoard — Choose your hero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg site-nav">
+    <div class="container"><a class="navbar-brand brand" href="index.html"><span class="brand-mark">Q</span> QUEST<span>BOARD</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="mainNav"><div class="navbar-nav ms-auto"><a class="nav-link active" href="index.html">Home</a><a class="nav-link" href="board.html">Quest board</a><a class="nav-link" href="leaderboard.html">Leaderboard</a></div></div>
+    </div>
+  </nav>
+  <main class="container landing-wrap">
+    <section class="hero-intro row align-items-center g-5">
+      <div class="col-lg-7"><p class="eyebrow"><span class="live-dot"></span> CAMPUS ADVENTURE SYSTEM <span class="eyebrow-code">// 01.001</span></p>
+        <h1>Your campus.<br><span class="text-gradient">Your next quest.</span></h1>
+        <p class="hero-copy">Small acts. Big XP. Find your people, share what you know, and turn everyday campus life into an adventure.</p>
+        <div class="hero-actions"><a class="btn btn-neon" href="#choose-hero">Enter the world <span aria-hidden="true">↗</span></a><a class="subtle-link" href="board.html">Explore open quests <span>→</span></a></div>
+        <div class="mini-stats"><div><strong>04</strong><span>quests open</span></div><div><strong>128</strong><span>heroes online</span></div><div><strong>∞</strong><span>ways to help</span></div></div>
+      </div>
+      <div class="col-lg-5"><div class="hero-art" aria-label="Pixel-style portal illustration"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="portal"><span>✦</span></div><div class="floating-tag tag-one">+50 XP</div><div class="floating-tag tag-two">QUEST FOUND</div><div class="art-caption"><span>SECTOR 07</span><span>● ONLINE</span></div></div></div>
+    </section>
+    <section class="choose-panel panel" id="choose-hero">
+      <div class="section-heading"><div><p class="eyebrow">PLAYER PROFILE</p><h2>Choose your hero</h2></div><span class="step-pill">STEP 01 / 02</span></div>
+      <p class="muted">Pick up where you left off, or create a brand new character.</p>
+      <form id="hero-form" class="row g-3 align-items-end">
+        <div class="col-md-8"><label class="form-label" for="hero-select">Existing heroes</label><select class="form-select game-select" id="hero-select"><option value="">Select a hero...</option></select></div>
+        <div class="col-md-4 d-grid"><button class="btn btn-neon" type="submit">Continue as hero <span>→</span></button></div>
+      </form>
+      <div class="divider-label"><span>OR CREATE A NEW HERO</span></div>
+      <form id="create-hero-form" class="row g-3">
+        <div class="col-md-5"><label class="form-label" for="hero-name">Hero name</label><input class="form-control game-input" id="hero-name" maxlength="24" placeholder="e.g. PixelPaladin" required></div>
+        <div class="col-md-4"><label class="form-label" for="hero-class">Class</label><select class="form-select game-select" id="hero-class"><option>Coder</option><option>Designer</option><option>Thinker</option></select></div>
+        <div class="col-md-3 d-grid align-self-end"><button class="btn btn-outline-neon" type="submit">Create hero +</button></div>
+      </form>
+      <p class="form-message" id="hero-message" aria-live="polite"></p>
+    </section>
+    <footer class="site-footer"><span>QUESTBOARD <span class="text-cyan">●</span> CAMPUS RPG</span><span>MAKE THE EVERYDAY LEGENDARY</span></footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>
