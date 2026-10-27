@@ -3,6 +3,7 @@ var express = require("express");
 var cors = require("cors");
 var questsRoutes = require("./routes/quests");
 var heroesRoutes = require("./routes/heroes");
+var leaderboardRoutes = require("./routes/leaderboard");
 var connectDatabase = require("./db").connectDatabase;
 
 // Create the Express application and choose its local port.
@@ -18,6 +19,9 @@ app.use("/api/quests", questsRoutes);
 
 // Mount the hero endpoints below their own API address.
 app.use("/api/heroes", heroesRoutes);
+
+// Mount the top-ten heroes endpoint.
+app.use("/api/leaderboard", leaderboardRoutes);
 
 // Give a simple response when someone opens the server home page.
 function showServerMessage(request, response) {
