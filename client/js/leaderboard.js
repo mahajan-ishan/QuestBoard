@@ -1,28 +1,3 @@
-// Use demo scores so the leaderboard looks populated before the API exists.
-var demoLeaderboard = [
-  { id: "hero-1", name: "NovaByte", heroClass: "Coder", avatar: "🧑‍💻", xp: 260, level: 3 },
-  { id: "hero-2", name: "MiraPixel", heroClass: "Designer", avatar: "🧝", xp: 180, level: 2 },
-  { id: "hero-3", name: "TheoryFox", heroClass: "Thinker", avatar: "🦊", xp: 90, level: 1 },
-  { id: "hero-4", name: "ByteBard", heroClass: "Coder", avatar: "🧙", xp: 75, level: 1 },
-  { id: "hero-5", name: "CloudSketch", heroClass: "Designer", avatar: "🦄", xp: 50, level: 1 }
-];
-
-// Combine saved heroes with the demo scores and sort by XP.
-function getRankedHeroes() {
-  var savedHeroes = JSON.parse(localStorage.getItem("questboardHeroes") || "[]");
-  var heroes = savedHeroes.length > 0 ? savedHeroes : demoLeaderboard;
-  heroes.sort(function (firstHero, secondHero) { return secondHero.xp - firstHero.xp; });
-  return heroes;
-}
-
-// Turn a hero's level into the title used by the game.
-function getRankTitle(level) {
-  if (level >= 7) return "Legend";
-  if (level >= 5) return "Wizard";
-  if (level >= 3) return "Apprentice";
-  return "Noob";
-}
-
 // Draw the three highest scoring heroes as podium cards.
 function showPodium(heroes) {
   var podium = document.getElementById("podium");
@@ -43,7 +18,7 @@ function showPodium(heroes) {
     var name = document.createElement("h3");
     name.textContent = hero.name;
     var title = document.createElement("p");
-    title.textContent = getRankTitle(hero.level) + " · Level " + hero.level;
+    title.textContent = questCommon.getRankTitle(hero.level) + " · Level " + hero.level;
     var xp = document.createElement("div");
     xp.className = "podium-xp";
     xp.textContent = hero.xp + " XP";
@@ -83,7 +58,20 @@ function showLeaderboard(heroes) {
   });
 }
 
-// Load and display the demo leaderboard.
-var rankedHeroes = getRankedHeroes().slice(0, 10);
-showPodium(rankedHeroes);
-showLeaderboard(rankedHeroes);
+// Load the leaderboard data from the Express API.
+async function loadLeaderboard() {
+  try {
+    var heroes = await questApi.getLeaderboard();
+    if (heroes.length === 0) {
+      document.getElementById("leaderboard-message").textContent = "No heroes yet. Create the first hero to join the rankings!";
+      return;
+    }
+    showPodium(heroes);
+    showLeaderboard(heroes);
+  } catch (error) {
+    document.getElementById("leaderboard-message").textContent = "Could not load leaderboard. Check the server and try again.";
+  }
+}
+
+// Load the real scores when the page opens.
+loadLeaderboard();

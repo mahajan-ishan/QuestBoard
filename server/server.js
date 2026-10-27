@@ -1,6 +1,7 @@
 // Load Express, CORS, and the quest routes for the API server.
 var express = require("express");
 var cors = require("cors");
+var path = require("path");
 var questsRoutes = require("./routes/quests");
 var heroesRoutes = require("./routes/heroes");
 var leaderboardRoutes = require("./routes/leaderboard");
@@ -14,6 +15,9 @@ var PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
+// Serve the HTML, CSS, and JavaScript from the client folder.
+app.use(express.static(path.join(__dirname, "../client")));
+
 // Mount all quest endpoints below the shared API address.
 app.use("/api/quests", questsRoutes);
 
@@ -23,13 +27,13 @@ app.use("/api/heroes", heroesRoutes);
 // Mount the top-ten heroes endpoint.
 app.use("/api/leaderboard", leaderboardRoutes);
 
-// Give a simple response when someone opens the server home page.
+// Give a simple response when someone checks the API status.
 function showServerMessage(request, response) {
   response.status(200).json({ message: "QuestBoard API is running" });
 }
 
-// Connect the health check route to its handler function.
-app.get("/", showServerMessage);
+// Connect the API status route to its handler function.
+app.get("/api/status", showServerMessage);
 
 // Connect to MongoDB before accepting requests.
 async function startServer() {

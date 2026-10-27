@@ -1,72 +1,74 @@
-// Keep the starter heroes in the browser so every page can share them.
-var sampleHeroes = [
-  { id: "hero-1", name: "NovaByte", heroClass: "Coder", avatar: "🧑‍💻", xp: 260, level: 3 },
-  { id: "hero-2", name: "MiraPixel", heroClass: "Designer", avatar: "🧝", xp: 180, level: 2 },
-  { id: "hero-3", name: "TheoryFox", heroClass: "Thinker", avatar: "🦊", xp: 90, level: 1 }
-];
-
-// Load the saved heroes or start with the sample heroes for this demo.
-function getHeroes() {
-  var savedHeroes = localStorage.getItem("questboardHeroes");
-  if (savedHeroes) {
-    return JSON.parse(savedHeroes);
-  }
-  localStorage.setItem("questboardHeroes", JSON.stringify(sampleHeroes));
-  return sampleHeroes;
-}
-
-// Add each available hero to the selection menu.
-function showHeroes() {
+// Load saved heroes from the API into the existing-hero menu.
+async function showHeroes() {
   var select = document.getElementById("hero-select");
-  var heroes = getHeroes();
-  heroes.forEach(function (hero) {
-    var option = document.createElement("option");
-    option.value = hero.id;
-    option.textContent = hero.avatar + "  " + hero.name + " · " + hero.heroClass;
-    select.appendChild(option);
-  });
+  try {
+    var heroes = await questApi.getHeroes();
+    heroes.forEach(function (hero) {
+      var option = document.createElement("option");
+      option.value = hero._id;
+      option.textContent = hero.avatar + "  " + hero.name + " · " + hero.heroClass;
+      select.appendChild(option);
+    });
+    var savedHeroId = questCommon.getCurrentHeroId();
+    var savedHeroExists = heroes.some(function (hero) { return hero._id === savedHeroId; });
+    if (savedHeroId && savedHeroExists) {
+      select.value = savedHeroId;
+    } else if (savedHeroId) {
+      questCommon.clearCurrentHeroId();
+    }
+  } catch (error) {
+    questCommon.showPageMessage("hero-message", "Could not load heroes. Check that the server is running.", true);
+  }
 }
 
-// Remember the chosen hero and open the quest board.
+// Replace the landing-page demo numbers with counts from the API.
+async function showStats() {
+  try {
+    var quests = await questApi.getQuests();
+    var heroes = await questApi.getHeroes();
+    var openQuests = quests.filter(function (quest) { return quest.status === "Open"; });
+    document.getElementById("open-quest-count").textContent = openQuests.length;
+    document.getElementById("hero-count").textContent = heroes.length;
+  } catch (error) {
+    document.getElementById("open-quest-count").textContent = "—";
+    document.getElementById("hero-count").textContent = "—";
+  }
+}
+
+// Remember the selected hero and open the quest board.
 function continueAsHero(event) {
   event.preventDefault();
   var heroId = document.getElementById("hero-select").value;
-  var message = document.getElementById("hero-message");
   if (!heroId) {
-    message.textContent = "Choose a hero first, adventurer.";
+    questCommon.showPageMessage("hero-message", "Choose a hero first, adventurer.", true);
     return;
   }
-  localStorage.setItem("questboardCurrentHero", heroId);
+  questCommon.setCurrentHeroId(heroId);
   window.location.href = "board.html";
 }
 
-// Create a simple hero and save it for later visits.
-function createHero(event) {
+// Create a hero through the API, then select the new hero.
+async function createHeroFromForm(event) {
   event.preventDefault();
-  var nameInput = document.getElementById("hero-name");
+  var name = document.getElementById("hero-name").value.trim();
   var heroClass = document.getElementById("hero-class").value;
-  var heroes = getHeroes();
   var avatar = "🦊";
   if (heroClass === "Coder") {
     avatar = "🧑‍💻";
   } else if (heroClass === "Designer") {
     avatar = "🧝";
   }
-  var hero = {
-    id: "hero-" + Date.now(),
-    name: nameInput.value.trim(),
-    heroClass: heroClass,
-    avatar: avatar,
-    xp: 0,
-    level: 1
-  };
-  heroes.push(hero);
-  localStorage.setItem("questboardHeroes", JSON.stringify(heroes));
-  localStorage.setItem("questboardCurrentHero", hero.id);
-  window.location.href = "board.html";
+  try {
+    var result = await questApi.createHero({ name: name, heroClass: heroClass, avatar: avatar });
+    questCommon.setCurrentHeroId(result.hero._id);
+    window.location.href = "board.html";
+  } catch (error) {
+    questCommon.showPageMessage("hero-message", error.message, true);
+  }
 }
 
-// Connect the page forms and display the starting hero list.
-showHeroes();
+// Connect the forms and load the current hero choices.
 document.getElementById("hero-form").addEventListener("submit", continueAsHero);
-document.getElementById("create-hero-form").addEventListener("submit", createHero);
+document.getElementById("create-hero-form").addEventListener("submit", createHeroFromForm);
+showHeroes();
+showStats();
