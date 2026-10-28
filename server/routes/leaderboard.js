@@ -1,7 +1,20 @@
-// Set up the leaderboard route and MongoDB helper.
+// Set up the leaderboard route with sanitization.
 var express = require("express");
 var getDatabase = require("../db").getDatabase;
 var router = express.Router();
+
+// Remove sensitive fields before sending hero data in responses.
+function sanitizeHero(hero) {
+  return {
+    _id: hero._id,
+    username: hero.username,
+    heroClasses: hero.heroClasses,
+    avatar: hero.avatar,
+    xp: hero.xp,
+    level: hero.level,
+    createdAt: hero.createdAt
+  };
+}
 
 // Find the ten heroes with the most XP.
 async function getLeaderboard(request, response) {
@@ -11,10 +24,11 @@ async function getLeaderboard(request, response) {
       .sort({ xp: -1 })
       .limit(10)
       .toArray();
-    return response.status(200).json(heroes);
+    var sanitized = heroes.map(function(h) { return sanitizeHero(h); });
+    return response.status(200).json(sanitized);
   } catch (error) {
     console.error("Could not load leaderboard:", error.message);
-    return response.status(500).json({ message: "Could not load leaderboard" });
+    return response.status(500).json({ message: "Could not load leaderboard." });
   }
 }
 

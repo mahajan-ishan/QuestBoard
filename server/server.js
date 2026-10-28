@@ -5,6 +5,7 @@ var path = require("path");
 var questsRoutes = require("./routes/quests");
 var heroesRoutes = require("./routes/heroes");
 var leaderboardRoutes = require("./routes/leaderboard");
+var authRoutes = require("./routes/auth");
 var connectDatabase = require("./db").connectDatabase;
 
 // Create the Express application and choose its local port.
@@ -26,6 +27,9 @@ app.use("/api/heroes", heroesRoutes);
 
 // Mount the top-ten heroes endpoint.
 app.use("/api/leaderboard", leaderboardRoutes);
+
+// Mount the authentication endpoints.
+app.use("/api/auth", authRoutes);
 
 // Give a simple response when someone checks the API status.
 function showServerMessage(request, response) {

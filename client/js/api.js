@@ -1,29 +1,95 @@
-// Keep every request to the Express server in this file.
+// Keep every request to the Express API in this file.
 var API_BASE = "/api";
+var TOKEN_KEY = "questboard_token";
+var HERO_KEY = "questboard_hero";
+var LAST_SEEN_LEVEL_KEY = "questboard_last_seen_level";
 
-// Send one JSON request and return its response data.
-async function sendRequest(path, method, body) {
-  var options = {
-    method: method,
-    headers: { "Content-Type": "application/json" }
-  };
-  if (body) {
-    options.body = JSON.stringify(body);
-  }
+// Read the saved session token.
+function getToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+// Read the saved hero profile.
+function getCurrentHero() {
+  var heroJson = localStorage.getItem(HERO_KEY);
+  if (!heroJson) return null;
+
   try {
-    var response = await fetch(API_BASE + path, options);
-    var result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.message || "The server could not complete the request");
-    }
-    return result;
+    return JSON.parse(heroJson);
   } catch (error) {
-    console.error("API request failed:", error.message);
-    throw error;
+    console.error("Could not read the saved hero:", error.message);
+    return null;
   }
 }
 
-// Get quests and add the selected filters to the URL when needed.
+// Check whether both parts of the login session are present.
+function isLoggedIn() {
+  return Boolean(getToken() && getCurrentHero());
+}
+
+// Save the login response and set the starting level for popup checks.
+function saveSession(token, hero) {
+  localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(HERO_KEY, JSON.stringify(hero));
+  localStorage.setItem(LAST_SEEN_LEVEL_KEY, String(hero.level));
+}
+
+// Remove all saved session data.
+function clearSession() {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(HERO_KEY);
+  localStorage.removeItem(LAST_SEEN_LEVEL_KEY);
+}
+
+// Send one JSON request, adding the token when available.
+async function apiRequest(path, method, body) {
+  var headers = { "Content-Type": "application/json" };
+  var token = getToken();
+  if (token) {
+    headers.Authorization = token;
+  }
+
+  var options = {
+    method: method || "GET",
+    headers: headers
+  };
+  if (body !== undefined) {
+    options.body = JSON.stringify(body);
+  }
+
+  var response;
+  try {
+    response = await fetch(API_BASE + path, options);
+  } catch (error) {
+    console.error("API request failed:", error.message);
+    throw new Error("Cannot reach the server. Check that QuestBoard is running.");
+  }
+
+  var result = {};
+  try {
+    result = await response.json();
+  } catch (error) {
+    if (response.status !== 204) {
+      console.error("Could not read the API response:", error.message);
+    }
+  }
+
+  if (response.status === 401 && path !== "/auth/login" && path !== "/auth/register") {
+    clearSession();
+    if (!window.location.pathname.endsWith("/login.html")) {
+      window.location.href = "login.html";
+    }
+  }
+
+  if (!response.ok) {
+    var requestError = new Error(result.message || "The server could not complete the request.");
+    requestError.status = response.status;
+    throw requestError;
+  }
+  return result;
+}
+
+// Keep the existing questApi methods available while page scripts are migrated.
 async function getQuests(filters) {
   var query = [];
   if (filters && filters.difficulty && filters.difficulty !== "All") {
@@ -32,62 +98,39 @@ async function getQuests(filters) {
   if (filters && filters.status && filters.status !== "All") {
     query.push("status=" + encodeURIComponent(filters.status));
   }
-  var path = "/quests";
-  if (query.length > 0) {
-    path += "?" + query.join("&");
-  }
-  return await sendRequest(path, "GET");
+  return await apiRequest("/quests" + (query.length ? "?" + query.join("&") : ""), "GET");
 }
 
-// Create a quest in the database.
 async function createQuest(quest) {
-  return await sendRequest("/quests", "POST", quest);
+  return await apiRequest("/quests", "POST", quest);
 }
 
-// Edit, accept, or complete one quest.
 async function updateQuest(id, changes) {
-  return await sendRequest("/quests/" + encodeURIComponent(id), "PUT", changes);
+  return await apiRequest("/quests/" + encodeURIComponent(id), "PUT", changes);
 }
 
-// Delete a quest after sending the poster's ID.
-async function deleteQuest(id, postedBy) {
-  return await sendRequest("/quests/" + encodeURIComponent(id), "DELETE", { postedBy: postedBy });
+async function deleteQuest(id) {
+  return await apiRequest("/quests/" + encodeURIComponent(id), "DELETE");
 }
 
-// Get all heroes or create a new one.
 async function getHeroes() {
-  return await sendRequest("/heroes", "GET");
+  return await apiRequest("/heroes", "GET");
 }
 
-// Create a hero in the database.
-async function createHero(hero) {
-  return await sendRequest("/heroes", "POST", hero);
-}
-
-// Get one hero by the MongoDB ID saved in the browser.
 async function getHero(id) {
-  return await sendRequest("/heroes/" + encodeURIComponent(id), "GET");
+  return await apiRequest("/heroes/" + encodeURIComponent(id), "GET");
 }
 
-// Add XP to one hero through the API.
-async function addHeroXp(id, xpToAdd) {
-  return await sendRequest("/heroes/" + encodeURIComponent(id), "PUT", { xpToAdd: xpToAdd });
-}
-
-// Get the ten highest-XP heroes.
 async function getLeaderboard() {
-  return await sendRequest("/leaderboard", "GET");
+  return await apiRequest("/leaderboard", "GET");
 }
 
-// Make the API functions available to the other page scripts.
 window.questApi = {
   getQuests: getQuests,
   createQuest: createQuest,
   updateQuest: updateQuest,
   deleteQuest: deleteQuest,
   getHeroes: getHeroes,
-  createHero: createHero,
   getHero: getHero,
-  addHeroXp: addHeroXp,
   getLeaderboard: getLeaderboard
 };
